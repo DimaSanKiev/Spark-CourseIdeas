@@ -40,8 +40,8 @@ public class Main {
             String username = req.queryParams("username");
             res.cookie("username", username);
             model.put("username", username);
-            res.redirect("/ideas");
-            return new ModelAndView(model, "sign-in.hbs");
+            res.redirect("/");
+            return null;
         }, new HandlebarsTemplateEngine());
 
         get("/ideas", (req, res) -> {
@@ -54,6 +54,13 @@ public class Main {
             String title = req.queryParams("title");
             CourseIdea courseIdea = new CourseIdea(title, req.attribute("username"));
             dao.add(courseIdea);
+            res.redirect("/ideas");
+            return null;
+        });
+
+        post("/ideas/:slug/vote", (req, res) -> {
+            CourseIdea idea = dao.findBySlug(req.params("slug"));
+            idea.addVoter(req.attribute("username"));
             res.redirect("/ideas");
             return null;
         });
